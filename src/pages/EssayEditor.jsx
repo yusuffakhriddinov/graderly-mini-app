@@ -1,12 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Timer from '../components/Timer';
 
 export default function EssayEditor({ task }) {
   const [essay, setEssay] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe.user) {
+      setUserId(window.Telegram.WebApp.initDataUnsafe.user.id);
+    }
+  }, []);
 
   const handleSubmit = async () => {
-    const userId = window.Telegram.WebApp.initDataUnsafe.user.id;
+    if (!userId) {
+      alert("User ID not found. Please launch this from Telegram WebApp.");
+      return;
+    }
 
     await fetch('https://your-backend.com/submit-essay', {
       method: 'POST',
